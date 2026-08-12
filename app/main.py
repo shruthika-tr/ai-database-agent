@@ -95,6 +95,9 @@ async def chat(request: ChatRequest) -> dict[str, object]:
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+    except RuntimeError as exc:
+        # Upstream runtime errors (e.g. LLM API failures) map to 502 Bad Gateway
+        raise HTTPException(status_code=502, detail=str(exc))
     except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
 
@@ -102,7 +105,16 @@ async def chat(request: ChatRequest) -> dict[str, object]:
         return {"success": True, "message": "Summary sent successfully."}
 
     if response.get("type") == "query":
+        summary = response.get("summary")
+        if summary:
+            return {
+                "success": True,
+                "message": summary,
+                "result": response.get("result"),
+                "summary": summary,
+            }
+
         message = _format_query_message(response.get("result"))
-        return {"success": True, "message": message}
+        return {"success": True, "message": message, "result": response.get("result")}
 
     return {"success": True, "message": "Request completed successfully."}

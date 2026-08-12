@@ -52,6 +52,7 @@ def process_message(message: str, session_id: str, schema: str) -> Dict[str, Any
     sql = generate_sql(message, schema)
     validate_select_sql(sql)
     result = execute_sql(sql)
+    summary = summarize_result(message, result)
     update_session(session_id, message, sql, result)
 
     return {
@@ -59,4 +60,5 @@ def process_message(message: str, session_id: str, schema: str) -> Dict[str, Any
         "question": message,
         "sql": sql,
         "result": result,
+        "summary": summary,
     }

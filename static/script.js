@@ -59,7 +59,8 @@ async function sendMessage() {
     }
 
     const payload = await response.json();
-    appendMessage(payload.message, "agent");
+    const displayText = payload.summary || payload.message;
+    appendMessage(displayText, "agent");
   } catch (error) {
     showError(
       "Unable to reach the API. Please verify the server is running at http://127.0.0.1:8000.",
