@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Sales Database Agent</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 class="title">AI Sales Database Agent</h1>
+        <p class="session-label">Session: <span class="session-id"></span></p>
+      </header>
+
+      <main class="chat-window"></main>
+
+      <section class="footer">
+        <div class="error-banner"></div>
+        <div class="input-row">
+          <textarea
+            id="message-input"
+            class="chat-input"
+            rows="3"
+            placeholder="Type your question or email request..."
+          ></textarea>
+          <div class="button-row">
+            <button id="send-button" class="send-button" type="button">Send</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="/static/script.js"></script>
+  </body>
+</html>
