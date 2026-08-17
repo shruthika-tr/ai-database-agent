@@ -5,7 +5,13 @@ from typing import Any, Dict
 
 from app.services import email_service
 from app.services.database_service import execute_sql
-from app.services.llm_service import generate_sql, summarize_result
+from app.services.forecasting_service import (
+    calculate_next_forecast_month,
+    detect_forecast_intent,
+    extract_country_from_message,
+    generate_forecast,
+)
+from app.services.llm_service import explain_forecast, generate_sql, summarize_result
 from app.services.session_service import get_session, update_session
 from app.services.sql_service import validate_select_sql
 
@@ -47,6 +53,29 @@ def process_message(message: str, session_id: str, schema: str) -> Dict[str, Any
             "recipient": recipient,
             "summary": summary,
             "message": "Summary emailed successfully.",
+        }
+
+    # Check for forecast intent BEFORE SQL generation
+    if detect_forecast_intent(message):
+        country = extract_country_from_message(message)
+        forecast_month = calculate_next_forecast_month()
+        forecast_result = generate_forecast(country, forecast_month)
+
+        if forecast_result.get("error"):
+            raise ValueError(forecast_result["error"])
+
+        prediction = forecast_result.get("prediction")
+        num_months = forecast_result.get("num_months", 0)
+        explanation = explain_forecast(
+            message, country, forecast_month, prediction, num_months
+        )
+
+        return {
+            "type": "forecast",
+            "country": country,
+            "period": forecast_month,
+            "prediction": prediction,
+            "message": explanation,
         }
 
     sql = generate_sql(message, schema)

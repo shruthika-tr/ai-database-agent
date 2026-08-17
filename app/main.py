@@ -104,6 +104,17 @@ async def chat(request: ChatRequest) -> dict[str, object]:
     if response.get("type") == "email":
         return {"success": True, "message": "Summary sent successfully."}
 
+    if response.get("type") == "forecast":
+        return {
+            "success": True,
+            "message": response.get("message"),
+            "forecast": {
+                "country": response.get("country"),
+                "period": response.get("period"),
+                "prediction": response.get("prediction"),
+            },
+        }
+
     if response.get("type") == "query":
         summary = response.get("summary")
         if summary:
